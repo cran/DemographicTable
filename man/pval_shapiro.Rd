@@ -15,7 +15,7 @@ pval_shapiro(x, CLT = FALSE)
 \code{\link{pval_shapiro}} returns a \code{\link[base]{double}} scalar.
 }
 \description{
-Obtain p-value from Shapiro-Wilk normality test \code{\link[stats]{shapiro.test}}, 
+Obtain p-value from \code{\link[stats:shapiro.test]{Shapiro-Wilk}} normality test, 
 taking into consideration of several exceptions.
 }
 \details{

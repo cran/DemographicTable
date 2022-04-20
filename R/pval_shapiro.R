@@ -4,7 +4,7 @@
 #' @title P-value from modified Shapiro-Wilk Normality Test
 #' 
 #' @description
-#' Obtain p-value from Shapiro-Wilk normality test \code{\link[stats]{shapiro.test}}, 
+#' Obtain p-value from \code{\link[stats:shapiro.test]{Shapiro-Wilk}} normality test, 
 #' taking into consideration of several exceptions.
 #' 
 #' @param x \code{\link[base]{double}} vector

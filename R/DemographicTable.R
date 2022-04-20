@@ -9,24 +9,37 @@
 #' @param data.name \code{\link[base]{character}} scalar, or the argument call of \code{data}.  
 #' A user-friendly name of the input \code{data}.
 #' 
-#' @param groups \code{\link[base]{character}} scalar or vector, the name(s) of group(s) between which the comparisons are to be made.
-#' Default \code{NULL} indicating no comparison between group.
+#' @param groups \code{\link[base]{character}} scalar or vector, 
+#' the name(s) of sub-group(s) for which the summary statistics are to be provided.
+#' Default \code{NULL} indicating no sub-groups.
 #' 
-#' @param keep_missing_group \code{\link[base]{logical}} scalar, whether to keep the subjects with missing \code{group}
-#' in a separate group (coded \code{group = '.missing'})
+#' @param keep_missing_group \code{\link[base]{logical}} scalar.
+#' If \code{TRUE} (default), the subjects with missing \code{group}
+#' are put into a new group (\code{'.missing'}).
+#' if \code{FALSE}, these subjects are removed from group-wise summary statistics.
 #' 
-#' @param avoid \code{\link[base]{character}} vector, the name{s} of variable{s} to be avoided.
+#' @param exclude \code{\link[base]{character}} vector, 
+#' the name(s) of variable(s) to be excluded.  
+#' Default \code{NULL} indicating no variable are to be excluded.
 #' 
-#' @param avoid_pattern \code{\link[base]{character}} scalar as regular expression \code{\link[base]{regex}}, 
-#' the pattern of the names of the variable(s) to be avoided 
+#' @param exclude_pattern (optional) \code{\link[base]{character}} scalar as 
+#' \code{\link[base:regex]{regular expression}}, 
+#' the pattern of the names of the variable(s) to be excluded. 
 #' 
-#' @param select \code{\link[base]{character}} vector, the name(s) of variable(s) to be included.
+#' @param include \code{\link[base]{character}} vector, 
+#' the name(s) of variable(s) to be included.
+#' Default \code{names(data)} indicating all variables are to be included.
 #' 
-#' @param select_pattern \code{\link[base]{character}} scalar as regular expression \code{\link[base]{regex}}, 
+#' @param include_pattern \code{\link[base]{character}} scalar as 
+#' \code{\link[base:regex]{regular expression}}, 
 #' the pattern of the names of the variable(s) to be included.
-
-#' @param overall \code{\link[base]{logical}} scalar, whether a column of overall summary statistics should be provided.
-#' Default \code{TRUE}.
+#' 
+#' @param overall \code{\link[base]{logical}} scalar.
+#' If \code{TRUE} (default), a column of overall summary statistics will be provided.
+#' 
+#' @param compare \code{\link[base]{logical}} scalar.
+#' If \code{TRUE} (default), comparisons between group(s) will be made.
+#' 
 #' 
 #' @param ... potential parameters
 #' 
@@ -34,15 +47,15 @@
 #' 
 #' A demographic table with simple summary statistics, with optional comparison(s) over one or more groups, is created.
 #' 
-#' \code{\link[base]{numeric}} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR), 
+#' \code{\link[base:numeric]{Numeric}} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR), 
 #' skewness, Shapiro-Wilk normality test and ranges.
-#' If \code{group} is specified, they are compared using two-sample t-test \code{\link[stats]{t.test}}, 
-#' Wilcoxon test \code{\link[stats]{wilcox.test}}, ANOVA \code{\link[stats]{aov}} and/or 
-#' Kruskal-Wallis test \code{\link[stats]{kruskal.test}}.
+#' If \code{group} is specified, they are compared using two-sample \code{\link[stats:t.test]{t}}-test, 
+#' \code{\link[stats:wilcox.test]{Wilcoxon / Mann-Whitney}} test, one-way \code{\link[stats:aov]{ANOVA}} and/or 
+#' \code{\link[stats:kruskal.test]{Kruskal-Wallis}} test.
 #' 
 #' \code{\link[base]{logical}} and \code{\link[base]{factor}} variables are summarized in counts and percentages.
-#' If \code{group} is specified, they are compared using chi-squared test \code{\link[stats]{prop.test}} 
-#' and/or Fisher's exact test \code{\link[stats]{fisher.test}}.
+#' If \code{group} is specified, they are compared using \code{\link[stats:prop.test]{chi-squared}} test
+#' and/or \code{\link[stats:fisher.test]{Fisher exact}} test.
 #' 
 #' @return 
 #' 
@@ -52,6 +65,7 @@
 #' @examples 
 #' DemographicTable(esoph)
 #' DemographicTable(ToothGrowth, groups = 'supp')
+#' DemographicTable(ToothGrowth, groups = 'supp', compare = FALSE)
 #' DemographicTable(warpbreaks, groups = c('wool', 'tension'))
 #' 
 #' # write to Word file
@@ -67,9 +81,10 @@
 DemographicTable <- function(
     data, data.name = substitute(data), 
     groups = NULL, keep_missing_group = TRUE,
-    avoid, avoid_pattern, 
-    select, select_pattern, 
+    exclude = NULL, exclude_pattern, 
+    include, include_pattern, 
     overall = TRUE, 
+    compare = TRUE,
     ...
 ) {
   
@@ -87,28 +102,32 @@ DemographicTable <- function(
     if (any(id <- vapply(data[groups], FUN = is.matrix, FUN.VALUE = NA, USE.NAMES = FALSE))) stop(sQuote(groups[id]), ' is/are matrix column(s).')
   }
   
-  avoid <- if (missing(avoid_pattern)) {
-    if (!missing(avoid)) avoid # else NULL
-  } else {
-    ptn_avoid <- grep(avoid_pattern, x = names(data), value = TRUE)
-    if (missing(avoid)) ptn_avoid else unique.default(c(avoid, ptn_avoid))
+  if (!missing(exclude_pattern)) {
+    exclude <- unique.default(c(exclude, grep(exclude_pattern, x = names(data), value = TRUE)))
   }
   
-  select <- setdiff(x = if (missing(select_pattern)) {
-    if (missing(select)) names(data) else select
+  include <- if (missing(include_pattern)) {
+    if (missing(include)) names(data) else include
   } else {
-    ptn_select <- grep(select_pattern, x = names(data), value = TRUE)
-    if (missing(select)) ptn_select else unique.default(c(select, ptn_select))
-  }, y = c(avoid, groups)) # made sure `select` and `groups` has no overlap
-  
-  rm(avoid)
-  
-  if (any(id <- is.na(match(select, table = names(data), nomatch = NA_integer_)))) {
-    message('Unknown variable(s): ', sQuote(select[id]), ' removed.')
-    select <- select[!id]
+    ptn_include <- grep(include_pattern, x = names(data), value = TRUE)
+    if (missing(include)) ptn_include else unique.default(c(include, ptn_include))
   }
   
-  data <- data[c(select, groups)]
+  include <- setdiff(x = include, y = c(exclude, groups)) # made sure `include` and `groups` has no overlap
+  
+  rm(exclude)
+  
+  if (any(id <- is.na(match(include, table = names(data), nomatch = NA_integer_)))) {
+    message('Unknown variable(s): ', sQuote(include[id]), ' removed.')
+    include <- include[!id]
+  }
+  
+  data <- data[c(include, groups)]
+  
+  for (i in include) {
+    if (is.character(data[[i]])) data[[i]] <- factor(data[[i]]) 
+    # MUST!! otherwise missing groups in subset-data will not print zero-count
+  }
   
   ##################################################################
   ## Inspect `groups` in detail (removing rows if needed)
@@ -136,10 +155,10 @@ DemographicTable <- function(
   }
   
   ############################################
-  ## Inspect `select` in detail
+  ## Inspect `include` in detail
   ############################################
   
-  vlst <- class1List(data[select]) # without `groups`
+  vlst <- class1List(data[include]) # without `groups`
   
   if (length(vlst$matrix)) {
     stop('debugging for Curry-Zach study')
@@ -163,7 +182,7 @@ DemographicTable <- function(
   ret <- if (overall) DemographicSummaries(data, vlst = vlst, ...) # else NULL      
   
   if (length(groups)) {
-    ret_by <- lapply(groups, FUN = demoTab_by, data = data, vlst = vlst, ...)
+    ret_by <- lapply(groups, FUN = demoTab_by, data = data, vlst = vlst, compare = compare, ...)
     rets <- if (length(ret)) c(list(ret), ret_by) else ret_by
     # is_equal(rets, FUN = function(x) dimnames(x)[[1L]])
     ret <- do.call(cbind, args = rets)
@@ -231,10 +250,10 @@ demoTab_by <- function(data, vlst, group, group_perc = TRUE, compare = TRUE, ...
   gidx <- split.default(seq_along(fgrp), f = fgrp)
   gN <- lengths(gidx, use.names = FALSE)
   
-  out <- do.call(cbind, args = lapply(gidx, FUN = \(id) { # (id = gidx[[1L]])
+  ret <- do.call(cbind, args = lapply(gidx, FUN = function(id) { # (id = gidx[[1L]])
     DemographicSummaries(data[id, , drop = FALSE], vlst = vlst, ...)
   }))
-  colnames(out) <- if (group_perc) {
+  colnames(ret) <- if (group_perc) {
     sprintf(fmt = '%s\n= %s\nN=%d (%.1f%%)', group, names(gidx), gN, 1e2*gN/sum(gN))
   } else sprintf(fmt = '%s\n= %s\nN=%d', group, names(gidx), gN)
   
@@ -245,26 +264,28 @@ demoTab_by <- function(data, vlst, group, group_perc = TRUE, compare = TRUE, ...
   } # else NULL
   
   ng <- length(gidx)
-  if (ng < 2L) return(out)
+  if (ng < 2L) return(ret)
   
   if (compare) {
-    .double <- vapply(c(vlst$integer, vlst$numeric, vlst$difftime), FUN = \(i) compare_double(demo_get(x = data[[i]], gidx = gidx), ...), FUN.VALUE = '')
-    .bool <- vapply(vlst$logical, FUN = \(i) compare_bool(demo_get(x = data[[i]], gidx = gidx), ...), FUN.VALUE = '')
-    .factor <- vapply(c(vlst$character, vlst$factor, vlst$ordered), FUN = \(i) compare_factor(x = data[[i]], g = fgrp, ...), FUN.VALUE = '')
+    .double <- vapply(c(vlst$integer, vlst$numeric, vlst$difftime), FUN = function(i) compare_double(demo_get(x = data[[i]], gidx = gidx), ...), FUN.VALUE = '')
+    .bool <- vapply(vlst$logical, FUN = function(i) compare_bool(demo_get(x = data[[i]], gidx = gidx), ...), FUN.VALUE = '')
+    .factor <- vapply(c(vlst$character, vlst$factor, vlst$ordered), FUN = function(i) compare_factor(x = data[[i]], g = fgrp, ...), FUN.VALUE = '')
     pval <- c(.double, .bool, .factor)
-    if (dim(out)[1L] != length(pval)) stop('demographic table contruction wrong: pval do not match summary stats')
+    if (dim(ret)[1L] != length(pval)) stop('demographic table contruction wrong: pval do not match summary stats')
     #p_test0 <- gsub('\\(|\\)', replacement = '', x = unique.default(str_extract(pval, pattern = '\\(.*\\)$')))
     #p_test <- p_test0[!is.na(p_test0)]
-  } #else pval <- p_test <- NULL
+    ret_compare <- as.matrix(pval)
+    colnames(ret_compare) <- paste0('Significance\n(by ', group, ')\n', txt_g1)
+  } else ret_compare <- NULL #pval <- p_test <- NULL
   
 #  .by2 <- (ng == 2L)
 #  if (SMD && .by2) {
     
 #    txt_SMD <- function(x) {
 #      xci <- confint.stddiff(x)
-#      out <- sprintf(fmt = '%.3f (%.3f~%.3f)', x$coefficients, xci[,1L], xci[,2L])
-#      out[!attr(xci, which = 'ok', exact = TRUE)] <- ''
-#      return(out)
+#      ret <- sprintf(fmt = '%.3f (%.3f~%.3f)', x$coefficients, xci[,1L], xci[,2L])
+#      ret[!attr(xci, which = 'ok', exact = TRUE)] <- ''
+#      return(ret)
 #    }
     
 #    .smd_dbl <- if (length(v_dbl <- c(vlst$integer, vlst$numeric, vlst$difftime))) {
@@ -280,27 +301,38 @@ demoTab_by <- function(data, vlst, group, group_perc = TRUE, compare = TRUE, ...
 #    } else character()
     
 #    SMD <- as.vector(c(.smd_dbl, .smd_bool, .smd_fct_order))
-#    if (dim(out)[1L] != length(SMD)) stop('demographic table contruction wrong: pval do not match summary stats')
+#    if (dim(ret)[1L] != length(SMD)) stop('demographic table contruction wrong: pval do not match summary stats')
 #    
 #  } else SMD <- NULL
   
-  #out0 <- cbind('Significance' = pval, 'Standardized\nMean Difference' = SMD)
-  out0 <- cbind('Significance' = pval)
-  if (length(out0)) {
-    colnames(out0) <- paste0(colnames(out0), '\n(by ', group, ')')
-    if (length(txt_g1)) {
-      colnames(out0)[1L] <- paste0(dimnames(out0)[[2L]][1L], '\n', txt_g1)
-    }
-  }
-  
-  out <- cbind(out, out0)
-  #attr(out, which = 'test') <- p_test
-  return(out)
+  ret <- cbind(ret, ret_compare)
+  #attr(ret, which = 'test') <- p_test
+  return(ret)
 
 }
 
 
-# ?flextable::as_flextable
+#' @title Convert \code{\link{DemographicTable}} to \code{\link[flextable]{flextable}}
+#' 
+#' @description 
+#' Convert a \code{\link{DemographicTable}} to \code{\link[flextable]{flextable}}.
+#' 
+#' @param x a \code{\link{DemographicTable}}
+#' 
+#' @param font.size \code{\link[base]{integer}} scalar, the font size (default 8).
+#' See \code{\link[flextable]{fontsize}}
+#' 
+#' @param caption (optional) \code{\link[base]{character}} scalar, the table caption.
+#' See \code{\link[flextable]{set_caption}}
+#' 
+#' @param ... potential additional parameters, not currently in use 
+#' 
+#' @return 
+#' 
+#' \code{\link{as_flextable.DemographicTable}} returns a \code{\link[flextable]{flextable}} object.
+#'
+#' @seealso \code{\link[flextable]{as_flextable}}
+#' 
 #' @export
 as_flextable.DemographicTable <- function(x, font.size = 8, caption, ...) {
   x1 <- data.frame(' ' = dimnames(x)[[1L]], unclass(x), row.names = NULL, check.names = FALSE, fix.empty.names = FALSE, stringsAsFactors = FALSE)
@@ -318,13 +350,9 @@ as_flextable.DemographicTable <- function(x, font.size = 8, caption, ...) {
 }
 
 
-
-
-# S3 methods
-
 # ?base::print
 #' @export
-print.DemographicTable <- function(x, ...) print(as_flextable.DemographicTable(x))
+print.DemographicTable <- function(x, ...) print(as_flextable.DemographicTable(x, ...))
 
 
 
@@ -457,12 +485,13 @@ compare_factor <- function(x, g, ...) {
   tab <- table(x, g, useNA = 'no') # `x` can be either 'factor' or 'character'
   if (anyNA(tab)) stop('should not happen')
   
-  tmp <- tryCatch(fisher.test(tab), error = \(e) {
+  tmp <- tryCatch(fisher.test(tab), error = function(e) {
     tmp <- if (grepl('simulate.p.value=TRUE', x = e$message)) {
-      tryCatch(fisher.test(tab, simulate.p.value = TRUE), error = \(e) e, warning = \(w) w)
-    } else tryCatch(chisq.test(tab), error = \(e) e, warning = \(w) w)
-    if (inherits(tmp, 'error')) return('Fisher\'s exact\nnor Chi2 test available')
-    if (inherits(tmp, 'warning')) return(suppressWarnings(chisq.test(tab)))
+      tryCatch(fisher.test(tab, simulate.p.value = TRUE), error = identity, warning = identity)
+    } else tryCatch(chisq.test(tab), error = identity, warning = identity)
+    if (inherits(tmp, what = 'error')) return('Fisher\'s exact\nnor Chi2 test available')
+    if (inherits(tmp, what = 'warning')) return(suppressWarnings(chisq.test(tab)))
+    return(tmp)
   })
   
   if (is.character(tmp)) return(tmp)

@@ -9,11 +9,12 @@ DemographicTable(
   data.name = substitute(data),
   groups = NULL,
   keep_missing_group = TRUE,
-  avoid,
-  avoid_pattern,
-  select,
-  select_pattern,
+  exclude = NULL,
+  exclude_pattern,
+  include,
+  include_pattern,
   overall = TRUE,
+  compare = TRUE,
   ...
 )
 }
@@ -23,24 +24,36 @@ DemographicTable(
 \item{data.name}{\code{\link[base]{character}} scalar, or the argument call of \code{data}.
 A user-friendly name of the input \code{data}.}
 
-\item{groups}{\code{\link[base]{character}} scalar or vector, the name(s) of group(s) between which the comparisons are to be made.
-Default \code{NULL} indicating no comparison between group.}
+\item{groups}{\code{\link[base]{character}} scalar or vector, 
+the name(s) of sub-group(s) for which the summary statistics are to be provided.
+Default \code{NULL} indicating no sub-groups.}
 
-\item{keep_missing_group}{\code{\link[base]{logical}} scalar, whether to keep the subjects with missing \code{group}
-in a separate group (coded \code{group = '.missing'})}
+\item{keep_missing_group}{\code{\link[base]{logical}} scalar.
+If \code{TRUE} (default), the subjects with missing \code{group}
+are put into a new group (\code{'.missing'}).
+if \code{FALSE}, these subjects are removed from group-wise summary statistics.}
 
-\item{avoid}{\code{\link[base]{character}} vector, the name{s} of variable{s} to be avoided.}
+\item{exclude}{\code{\link[base]{character}} vector, 
+the name(s) of variable(s) to be excluded.  
+Default \code{NULL} indicating no variable are to be excluded.}
 
-\item{avoid_pattern}{\code{\link[base]{character}} scalar as regular expression \code{\link[base]{regex}}, 
-the pattern of the names of the variable(s) to be avoided}
+\item{exclude_pattern}{(optional) \code{\link[base]{character}} scalar as 
+\code{\link[base:regex]{regular expression}}, 
+the pattern of the names of the variable(s) to be excluded.}
 
-\item{select}{\code{\link[base]{character}} vector, the name(s) of variable(s) to be included.}
+\item{include}{\code{\link[base]{character}} vector, 
+the name(s) of variable(s) to be included.
+Default \code{names(data)} indicating all variables are to be included.}
 
-\item{select_pattern}{\code{\link[base]{character}} scalar as regular expression \code{\link[base]{regex}}, 
+\item{include_pattern}{\code{\link[base]{character}} scalar as 
+\code{\link[base:regex]{regular expression}}, 
 the pattern of the names of the variable(s) to be included.}
 
-\item{overall}{\code{\link[base]{logical}} scalar, whether a column of overall summary statistics should be provided.
-Default \code{TRUE}.}
+\item{overall}{\code{\link[base]{logical}} scalar.
+If \code{TRUE} (default), a column of overall summary statistics will be provided.}
+
+\item{compare}{\code{\link[base]{logical}} scalar.
+If \code{TRUE} (default), comparisons between group(s) will be made.}
 
 \item{...}{potential parameters}
 }
@@ -54,19 +67,20 @@ Create a demographic table with simple summary statistics, with optional compari
 \details{
 A demographic table with simple summary statistics, with optional comparison(s) over one or more groups, is created.
 
-\code{\link[base]{numeric}} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR), 
+\code{\link[base:numeric]{Numeric}} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR), 
 skewness, Shapiro-Wilk normality test and ranges.
-If \code{group} is specified, they are compared using two-sample t-test \code{\link[stats]{t.test}}, 
-Wilcoxon test \code{\link[stats]{wilcox.test}}, ANOVA \code{\link[stats]{aov}} and/or 
-Kruskal-Wallis test \code{\link[stats]{kruskal.test}}.
+If \code{group} is specified, they are compared using two-sample \code{\link[stats:t.test]{t}}-test, 
+\code{\link[stats:wilcox.test]{Wilcoxon / Mann-Whitney}} test, one-way \code{\link[stats:aov]{ANOVA}} and/or 
+\code{\link[stats:kruskal.test]{Kruskal-Wallis}} test.
 
 \code{\link[base]{logical}} and \code{\link[base]{factor}} variables are summarized in counts and percentages.
-If \code{group} is specified, they are compared using chi-squared test \code{\link[stats]{prop.test}} 
-and/or Fisher's exact test \code{\link[stats]{fisher.test}}.
+If \code{group} is specified, they are compared using \code{\link[stats:prop.test]{chi-squared}} test
+and/or \code{\link[stats:fisher.test]{Fisher exact}} test.
 }
 \examples{
 DemographicTable(esoph)
 DemographicTable(ToothGrowth, groups = 'supp')
+DemographicTable(ToothGrowth, groups = 'supp', compare = FALSE)
 DemographicTable(warpbreaks, groups = c('wool', 'tension'))
 
 # write to Word file
