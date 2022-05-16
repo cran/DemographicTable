@@ -14,7 +14,7 @@ summaryText(x, fmt, ...)
 \item{...}{potential parameters}
 }
 \value{
-\code{\link{summaryText}} returns a \code{\link[base]{character}} scalar
+\code{\link{summaryText}} returns a \link[base]{character} scalar
 }
 \description{
 Provide the summary text of an R object

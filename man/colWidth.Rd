@@ -7,13 +7,13 @@
 colWidth(x, linefeed = TRUE)
 }
 \arguments{
-\item{x}{An R object convertible to \code{\link[base]{data.frame}}}
+\item{x}{An R object convertible to \link[base]{data.frame}}
 
 \item{linefeed}{see \code{\link{nchar_lf}}}
 }
 \value{
-\code{\link{colWidth}} returns an \code{\link[base]{integer}} vector 
-of the print widths of a \code{\link[base]{data.frame}}
+\code{\link{colWidth}} returns an \link[base]{integer} vector
+of the print widths of a \link[base]{data.frame}
 \strong{not} considering the row names.
 }
 \description{

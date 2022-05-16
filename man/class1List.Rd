@@ -4,19 +4,20 @@
 \alias{class1List}
 \title{class1List}
 \usage{
-class1List(data)
+class1List(x)
 }
 \arguments{
-\item{data}{a \code{\link[base]{data.frame}}}
+\item{x}{a \link[base]{data.frame} or \link[base]{list}}
 }
 \value{
-\code{\link{class1List}} returns a \code{\link[base]{list}} 
-of the first \code{\link[base]{class}} of each columns in the input \code{\link[base]{data.frame}}
+\code{\link{class1List}} returns a \link[base]{list}
+of the first \code{\link[base]{class}} of each element of the input.
 }
 \description{
-List the first \code{\link[base]{class}} of each columns in a \code{\link[base]{data.frame}}
+The first \link[base]{class} of each columns in a \link[base:is.recursive]{recursive} object
 }
 \examples{
 class1List(esoph)
+class1List(lm(Ozone ~ Wind + Temp, data = airquality))
 
 }

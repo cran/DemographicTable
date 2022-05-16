@@ -7,15 +7,15 @@
 pval_shapiro(x, CLT = FALSE)
 }
 \arguments{
-\item{x}{\code{\link[base]{double}} vector}
+\item{x}{\link[base]{double} vector}
 
-\item{CLT}{\code{\link[base]{logical}} scalar, whether to allow the use of Central Limit Theorem (default \code{FALSE})}
+\item{CLT}{\link[base]{logical} scalar, whether to allow the use of Central Limit Theorem (default \code{FALSE})}
 }
 \value{
-\code{\link{pval_shapiro}} returns a \code{\link[base]{double}} scalar.
+\code{\link{pval_shapiro}} returns a \link[base]{double} scalar.
 }
 \description{
-Obtain p-value from \code{\link[stats:shapiro.test]{Shapiro-Wilk}} normality test, 
+Obtain p-value from \code{\link[stats:shapiro.test]{Shapiro-Wilk}} normality test,
 taking into consideration of several exceptions.
 }
 \details{

@@ -4,40 +4,40 @@
 #' 
 #' @description Create a demographic table with simple summary statistics, with optional comparison(s) over one or more groups.
 #' 
-#' @param data a \code{\link[base]{data.frame}}
+#' @param data a \link[base]{data.frame}
 #' 
-#' @param data.name \code{\link[base]{character}} scalar, or the argument call of \code{data}.  
+#' @param data.name \link[base]{character} scalar, or the argument call of \code{data}.  
 #' A user-friendly name of the input \code{data}.
 #' 
-#' @param groups \code{\link[base]{character}} scalar or vector, 
+#' @param groups \link[base]{character} scalar or vector, 
 #' the name(s) of sub-group(s) for which the summary statistics are to be provided.
 #' Default \code{NULL} indicating no sub-groups.
 #' 
-#' @param keep_missing_group \code{\link[base]{logical}} scalar.
+#' @param keep_missing_group \link[base]{logical} scalar.
 #' If \code{TRUE} (default), the subjects with missing \code{group}
 #' are put into a new group (\code{'.missing'}).
 #' if \code{FALSE}, these subjects are removed from group-wise summary statistics.
 #' 
-#' @param exclude \code{\link[base]{character}} vector, 
+#' @param exclude \link[base]{character} vector, 
 #' the name(s) of variable(s) to be excluded.  
 #' Default \code{NULL} indicating no variable are to be excluded.
 #' 
-#' @param exclude_pattern (optional) \code{\link[base]{character}} scalar as 
-#' \code{\link[base:regex]{regular expression}}, 
+#' @param exclude_pattern (optional) \link[base]{character} scalar as 
+#' \link[base:regex]{regular expression}, 
 #' the pattern of the names of the variable(s) to be excluded. 
 #' 
-#' @param include \code{\link[base]{character}} vector, 
+#' @param include \link[base]{character} vector, 
 #' the name(s) of variable(s) to be included.
 #' Default \code{names(data)} indicating all variables are to be included.
 #' 
-#' @param include_pattern \code{\link[base]{character}} scalar as 
-#' \code{\link[base:regex]{regular expression}}, 
+#' @param include_pattern \link[base]{character} scalar as 
+#' \link[base:regex]{regular expression}, 
 #' the pattern of the names of the variable(s) to be included.
 #' 
-#' @param overall \code{\link[base]{logical}} scalar.
+#' @param overall \link[base]{logical} scalar.
 #' If \code{TRUE} (default), a column of overall summary statistics will be provided.
 #' 
-#' @param compare \code{\link[base]{logical}} scalar.
+#' @param compare \link[base]{logical} scalar.
 #' If \code{TRUE} (default), comparisons between group(s) will be made.
 #' 
 #' 
@@ -47,26 +47,33 @@
 #' 
 #' A demographic table with simple summary statistics, with optional comparison(s) over one or more groups, is created.
 #' 
-#' \code{\link[base:numeric]{Numeric}} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR), 
+#' \link[base:numeric]{Numeric} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR), 
 #' skewness, Shapiro-Wilk normality test and ranges.
 #' If \code{group} is specified, they are compared using two-sample \code{\link[stats:t.test]{t}}-test, 
 #' \code{\link[stats:wilcox.test]{Wilcoxon / Mann-Whitney}} test, one-way \code{\link[stats:aov]{ANOVA}} and/or 
 #' \code{\link[stats:kruskal.test]{Kruskal-Wallis}} test.
 #' 
-#' \code{\link[base]{logical}} and \code{\link[base]{factor}} variables are summarized in counts and percentages.
+#' \link[base]{logical} and \link[base]{factor} variables are summarized in counts and percentages.
 #' If \code{group} is specified, they are compared using \code{\link[stats:prop.test]{chi-squared}} test
 #' and/or \code{\link[stats:fisher.test]{Fisher exact}} test.
 #' 
 #' @return 
 #' 
 #' \code{\link{DemographicTable}} returns an object of S3 class \code{'DemographicTable'}, 
-#' which inherits from \code{\link[base]{matrix}}.
+#' which inherits from \link[base]{matrix}.
 #' 
 #' @examples 
 #' DemographicTable(esoph)
 #' DemographicTable(ToothGrowth, groups = 'supp')
 #' DemographicTable(ToothGrowth, groups = 'supp', compare = FALSE)
 #' DemographicTable(warpbreaks, groups = c('wool', 'tension'))
+#' DemographicTable(mtcars, groups = c('vs', 'am'), include = c('mpg', 'cyl', 'disp'))
+#' 
+#' # with missing value
+#' DemographicTable(airquality, groups = 'Month', exclude = 'Day')
+#' DemographicTable(MASS::survey, groups = 'Smoke')
+#' DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE)
+#' DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE, useNA = 'always')
 #' 
 #' # write to Word file
 #' library(flextable)
@@ -161,18 +168,16 @@ DemographicTable <- function(
   vlst <- class1List(data[include]) # without `groups`
   
   if (length(vlst$matrix)) {
-    stop('debugging for Curry-Zach study')
     mtype <- vapply(data[vlst$matrix], FUN = typeof, FUN.VALUE = '')
     if (any(id_double <- (mtype == 'double'))) {
       vlst$difftime <- c(vlst$difftime, vlst$matrix[id_double][id_difftime <- vapply(data[vlst$matrix[id_double]], FUN = inherits, what = 'difftime', FUN.VALUE = NA)])
       vlst$numeric <- c(vlst$numeric, vlst$matrix[id_double][!id_difftime])
     }
-    # 'factor' 'matrix' is in `vlst$factor` already...
+    # c('factor', 'matrix') is in `vlst$factor` already...
     if (any(id_bool <- (mtype == 'logical'))) {
       vlst$logical <- c(vlst$logical, vlst$matrix[id_bool])
     }
-    vlst$matrix <- vlst$matrix[!id_bool & !id_double]
-    if (length(vlst$matrix)) stop('uncovered matrix column')
+    if (any(!id_bool & !id_double)) stop('uncovered matrix column')
   }
   
   ######################
@@ -210,8 +215,9 @@ DemographicTable <- function(
 ## work horse
 ##################
 
-DemographicSummaries <- function(data, vlst, fmt = '%.1f', ...) {
+DemographicSummaries <- function(data, vlst, fmt = '%.1f', ...) {# useNA = c('no', 'always'), 
   
+  #useNA <- match.arg(useNA) # 'ifany' is not allowed
   
   out_num <- if (length(.num <- setNames(nm = c(vlst$integer, vlst$numeric)))) {
     unlist(lapply(data[.num], FUN = summaryText.default, fmt = fmt, ...), use.names = TRUE)
@@ -229,10 +235,9 @@ DemographicSummaries <- function(data, vlst, fmt = '%.1f', ...) {
   
   out_factor <- if (length(.fact <- c(vlst$character, vlst$factor, vlst$ordered))) {
     d_fact <- setNames(data[.fact], nm = paste0(.fact, ': n (%)'))
-    unlist(lapply(d_fact, FUN = summaryText, fmt = fmt, useNA = 'no', ...), use.names = TRUE)
+    unlist(lapply(d_fact, FUN = summaryText, fmt = fmt, ...), use.names = TRUE) # useNA = useNA, 
   } #else NULL
 
-  #return(c(out_num, out_difft, out_bool, out_factor))
   ret <- c(out_num, out_difft, out_bool, out_factor)
   array(ret, dim = c(length(ret), 1L), 
         dimnames = list(names(ret), paste0('N=', .row_names_info(data, type = 2L))))
@@ -319,19 +324,19 @@ demoTab_by <- function(data, vlst, group, group_perc = TRUE, compare = TRUE, ...
 #' 
 #' @param x a \code{\link{DemographicTable}}
 #' 
-#' @param font.size \code{\link[base]{integer}} scalar, the font size (default 8).
+#' @param font.size \link[base]{integer} scalar, the font size (default 8).
 #' See \code{\link[flextable]{fontsize}}
 #' 
-#' @param caption (optional) \code{\link[base]{character}} scalar, the table caption.
+#' @param caption (optional) \link[base]{character} scalar, the table caption.
 #' See \code{\link[flextable]{set_caption}}
 #' 
 #' @param ... potential additional parameters, not currently in use 
 #' 
 #' @return 
 #' 
-#' \code{\link{as_flextable.DemographicTable}} returns a \code{\link[flextable]{flextable}} object.
+#' \code{\link{as_flextable.DemographicTable}} returns a \link[flextable]{flextable} object.
 #'
-#' @seealso \code{\link[flextable]{as_flextable}}
+#' @seealso \link[flextable]{as_flextable}
 #' 
 #' @export
 as_flextable.DemographicTable <- function(x, font.size = 8, caption, ...) {
@@ -380,7 +385,7 @@ symb <- function(p) { # vectorized
   return(ret)
 }
 
-# old name `pText.pairwise.htest`
+
 pText_pairwise.htest <- function(x) {
   dnm <- dimnames(pv0 <- x$p.value)
   id <- lower.tri(pv0, diag = TRUE)
@@ -402,11 +407,9 @@ compare_double <- function(xs, CLT = TRUE, pairwise = 3L, alternative = c('two.s
   
   p_shapiro <- vapply(xs, FUN = pval_shapiro, CLT = CLT, FUN.VALUE = 0, USE.NAMES = FALSE)
   
-  
-  
   if (ng == 2L) { # ?stats::t.test or ?stats::wilcox.test
     if (any(p_shapiro < .05)) {
-      p.value <- wilcox.test(x = xs[[1L]], y = xs[[2L]], exact = FALSE, alternative = alternative)$p.value
+      suppressWarnings(p.value <- wilcox.test(x = xs[[1L]], y = xs[[2L]], exact = FALSE, alternative = alternative)$p.value)
       return(sprintf(fmt = paste0(symb(p.value), '%.3f\nWilcoxon-\nMann-Whitney'), p.value))
     }
     p.value <- t.test(x = xs[[1L]], y = xs[[2L]], alternative = alternative)$p.value
@@ -416,14 +419,12 @@ compare_double <- function(xs, CLT = TRUE, pairwise = 3L, alternative = c('two.s
   if (!is.numeric(pairwise) || length(pairwise) != 1L || anyNA(pairwise) || pairwise < 2L) stop('illegal `pairwise`')
   # `is.numeric(pairwise)` not `is.integer(pairwise)` to allow Inf
   
-  if (ng <= pairwise) {
-    x <- unlist(xs, use.names = FALSE)
-    g <- rep(names(xs), times = lengths(xs, use.names = FALSE))
-  }
+  x <- unlist(xs, use.names = FALSE)
+  g <- rep(names(xs), times = lengths(xs, use.names = FALSE))
   
   if (any(p_shapiro < .05)) {
     if (ng <= pairwise) {
-      tmp <- pairwise.wilcox.test(x = x, g = g, p.adjust.method = 'none', alternative = alternative)
+      suppressWarnings(tmp <- pairwise.wilcox.test(x = x, g = g, p.adjust.method = 'none', alternative = alternative))
       return(paste(c(pText_pairwise.htest(tmp), 'Wilcoxon-\nMann-Whitney'), collapse = '\n'))
     }
     return(tryCatch(expr = {

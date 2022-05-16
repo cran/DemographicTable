@@ -47,14 +47,14 @@ adjustColWidths.flextable <- function(x, font.size, elastic = 1.2, ...) {
 #' 
 #' @description Determine the text width of screen output
 #' 
-#' @param x An R object convertible to \code{\link[base]{data.frame}}
+#' @param x An R object convertible to \link[base]{data.frame}
 #' 
 #' @param linefeed see \code{\link{nchar_lf}}
 #' 
 #' @return 
 #' 
-#' \code{\link{colWidth}} returns an \code{\link[base]{integer}} vector 
-#' of the print widths of a \code{\link[base]{data.frame}}
+#' \code{\link{colWidth}} returns an \link[base]{integer} vector 
+#' of the print widths of a \link[base]{data.frame}
 #' \strong{not} considering the row names.
 #' 
 #' @examples 
@@ -78,13 +78,13 @@ colWidth <- function(x, linefeed = TRUE) {
 #' @description Finds the number of characters, similar to \code{\link[base]{nchar}}, 
 #' while acknowledging the line feed \code{'\\n'}
 #' 
-#' @param x An R object convertible to \code{\link[base]{character}}
+#' @param x An R object convertible to \link[base]{character}
 #' 
-#' @param linefeed \code{\link[base]{logical}} scalar, whether to recognize the line feed in counting
+#' @param linefeed \link[base]{logical} scalar, whether to recognize the line feed in counting
 #' number of characters.  Default \code{TRUE}
 #' 
 #' @return 
-#' \code{\link{nchar_lf}} returns an \code{\link[base]{integer}} scalar or vector, 
+#' \code{\link{nchar_lf}} returns an \link[base]{integer} scalar or vector, 
 #' the number of characters in each element of the input.
 #' 
 #' @examples 

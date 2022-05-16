@@ -9,20 +9,20 @@
 \arguments{
 \item{x}{a \code{\link{DemographicTable}}}
 
-\item{font.size}{\code{\link[base]{integer}} scalar, the font size (default 8).
+\item{font.size}{\link[base]{integer} scalar, the font size (default 8).
 See \code{\link[flextable]{fontsize}}}
 
-\item{caption}{(optional) \code{\link[base]{character}} scalar, the table caption.
+\item{caption}{(optional) \link[base]{character} scalar, the table caption.
 See \code{\link[flextable]{set_caption}}}
 
 \item{...}{potential additional parameters, not currently in use}
 }
 \value{
-\code{\link{as_flextable.DemographicTable}} returns a \code{\link[flextable]{flextable}} object.
+\code{\link{as_flextable.DemographicTable}} returns a \link[flextable]{flextable} object.
 }
 \description{
 Convert a \code{\link{DemographicTable}} to \code{\link[flextable]{flextable}}.
 }
 \seealso{
-\code{\link[flextable]{as_flextable}}
+\link[flextable]{as_flextable}
 }

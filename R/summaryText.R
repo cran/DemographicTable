@@ -12,7 +12,7 @@
 #' 
 #' @return 
 #' 
-#' \code{\link{summaryText}} returns a \code{\link[base]{character}} scalar
+#' \code{\link{summaryText}} returns a \link[base]{character} scalar
 #' 
 #' @examples 
 #' x = rpois(n = 20L, lambda = 2)
@@ -112,12 +112,12 @@ summaryText.default <- function(x, fmt = '%.2f', ...) {
 
 
 #' @export
-summaryText.factor <- function(x, fmt = '%.1f', useNA = 'no', ...) {
-  if (useNA == 'ifany') stop('useNA either \'no\' or \'always\' to guarantee equal names for all \'groups\' in DemographicTable')
+summaryText.factor <- function(x, fmt = '%.1f', useNA = c('no', 'always'), ...) {
+  useNA <- match.arg(useNA) # stop('useNA either \'no\' or \'always\' to guarantee equal names for all \'groups\' in DemographicTable')
   if (!length(x)) return('')
-  ct <- table(c(x), useNA = useNA, ...) 
-  # not using ?simpletable.factor, for easy sub-packaging
+  ct <- table(c(x), useNA = useNA, ...)
   # ?base::c important, there might be 'matrix'-'factor' for ?DemographicTable
+  if (any(id <- is.na(names(ct)))) names(ct)[id] <- '<NA>'
   out0 <- ifelse(ct == 0L, yes = '-', no = sprintf(fmt = paste0('%d (', fmt, '%%)'), ct, 1e2*ct/sum(ct)))
   nm <- paste(c('', names(ct)), collapse = '\n\t')
   if (!any(xok <- !is.na(x))) return(setNames('', nm = nm))

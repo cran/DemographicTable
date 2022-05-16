@@ -7,9 +7,9 @@
 #' Obtain p-value from \code{\link[stats:shapiro.test]{Shapiro-Wilk}} normality test, 
 #' taking into consideration of several exceptions.
 #' 
-#' @param x \code{\link[base]{double}} vector
+#' @param x \link[base]{double} vector
 #' 
-#' @param CLT \code{\link[base]{logical}} scalar, whether to allow the use of Central Limit Theorem (default \code{FALSE})
+#' @param CLT \link[base]{logical} scalar, whether to allow the use of Central Limit Theorem (default \code{FALSE})
 #' 
 #' @details 
 #' 
@@ -25,7 +25,7 @@
 #' 
 #' @return 
 #' 
-#' \code{\link{pval_shapiro}} returns a \code{\link[base]{double}} scalar.
+#' \code{\link{pval_shapiro}} returns a \link[base]{double} scalar.
 #' 
 #' @examples 
 #' pval_shapiro(rnorm(5))

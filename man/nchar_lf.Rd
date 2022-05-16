@@ -7,17 +7,17 @@
 nchar_lf(x, linefeed = TRUE)
 }
 \arguments{
-\item{x}{An R object convertible to \code{\link[base]{character}}}
+\item{x}{An R object convertible to \link[base]{character}}
 
-\item{linefeed}{\code{\link[base]{logical}} scalar, whether to recognize the line feed in counting
+\item{linefeed}{\link[base]{logical} scalar, whether to recognize the line feed in counting
 number of characters.  Default \code{TRUE}}
 }
 \value{
-\code{\link{nchar_lf}} returns an \code{\link[base]{integer}} scalar or vector, 
+\code{\link{nchar_lf}} returns an \link[base]{integer} scalar or vector,
 the number of characters in each element of the input.
 }
 \description{
-Finds the number of characters, similar to \code{\link[base]{nchar}}, 
+Finds the number of characters, similar to \code{\link[base]{nchar}},
 while acknowledging the line feed \code{'\\n'}
 }
 \examples{
