@@ -10,8 +10,8 @@ class1List(x)
 \item{x}{a \link[base]{data.frame} or \link[base]{list}}
 }
 \value{
-\code{\link{class1List}} returns a \link[base]{list}
-of the first \code{\link[base]{class}} of each element of the input.
+\link{class1List} returns a \link[base]{list}
+of the first \link[base]{class} of each element of the input.
 }
 \description{
 The first \link[base]{class} of each columns in a \link[base:is.recursive]{recursive} object

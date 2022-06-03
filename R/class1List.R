@@ -8,8 +8,8 @@
 #' 
 #' @return 
 #' 
-#' \code{\link{class1List}} returns a \link[base]{list} 
-#' of the first \code{\link[base]{class}} of each element of the input.
+#' \link{class1List} returns a \link[base]{list} 
+#' of the first \link[base]{class} of each element of the input.
 #' 
 #' @examples 
 #' class1List(esoph)

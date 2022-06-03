@@ -2,27 +2,26 @@
 % Please edit documentation in R/DemographicTable.R
 \name{as_flextable.DemographicTable}
 \alias{as_flextable.DemographicTable}
-\title{Convert \code{\link{DemographicTable}} to \code{\link[flextable]{flextable}}}
+\title{Convert \link{DemographicTable} to \link[flextable]{flextable}}
 \usage{
-\method{as_flextable}{DemographicTable}(x, font.size = 8, caption, ...)
+\method{as_flextable}{DemographicTable}(x, font.size = 9, caption, ...)
 }
 \arguments{
-\item{x}{a \code{\link{DemographicTable}}}
+\item{x}{a \link{DemographicTable}}
 
-\item{font.size}{\link[base]{integer} scalar, the font size (default 8).
-See \code{\link[flextable]{fontsize}}}
+\item{font.size}{\link[base]{integer} scalar, the font size (default 8)}
 
 \item{caption}{(optional) \link[base]{character} scalar, the table caption.
-See \code{\link[flextable]{set_caption}}}
+If missing (default), no caption is included}
 
 \item{...}{potential additional parameters, not currently in use}
 }
 \value{
-\code{\link{as_flextable.DemographicTable}} returns a \link[flextable]{flextable} object.
+\link{as_flextable.DemographicTable} returns a \link[flextable]{flextable} object.
 }
 \description{
-Convert a \code{\link{DemographicTable}} to \code{\link[flextable]{flextable}}.
+Convert a \link{DemographicTable} to \link[flextable]{flextable} object.
 }
 \seealso{
-\link[flextable]{as_flextable}
+\link[flextable]{as_flextable} \link[flextable]{fontsize} \link[flextable]{set_caption}
 }

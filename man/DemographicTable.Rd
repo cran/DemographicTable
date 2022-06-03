@@ -39,7 +39,7 @@ Default \code{NULL} indicating no variable are to be excluded.}
 
 \item{exclude_pattern}{(optional) \link[base]{character} scalar as
 \link[base:regex]{regular expression},
-the pattern of the names of the variable(s) to be excluded.}
+the \strong{pattern} of the names of the variable(s) to be excluded.}
 
 \item{include}{\link[base]{character} vector,
 the name(s) of variable(s) to be included.
@@ -47,7 +47,7 @@ Default \code{names(data)} indicating all variables are to be included.}
 
 \item{include_pattern}{\link[base]{character} scalar as
 \link[base:regex]{regular expression},
-the pattern of the names of the variable(s) to be included.}
+the \strong{pattern} of the names of the variable(s) to be included.}
 
 \item{overall}{\link[base]{logical} scalar.
 If \code{TRUE} (default), a column of overall summary statistics will be provided.}
@@ -58,7 +58,7 @@ If \code{TRUE} (default), comparisons between group(s) will be made.}
 \item{...}{potential parameters}
 }
 \value{
-\code{\link{DemographicTable}} returns an object of S3 class \code{'DemographicTable'},
+\link{DemographicTable} returns an object of S3 class \code{'DemographicTable'},
 which inherits from \link[base]{matrix}.
 }
 \description{
@@ -69,13 +69,13 @@ A demographic table with simple summary statistics, with optional comparison(s) 
 
 \link[base:numeric]{Numeric} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR),
 skewness, Shapiro-Wilk normality test and ranges.
-If \code{group} is specified, they are compared using two-sample \code{\link[stats:t.test]{t}}-test,
-\code{\link[stats:wilcox.test]{Wilcoxon / Mann-Whitney}} test, one-way \code{\link[stats:aov]{ANOVA}} and/or
-\code{\link[stats:kruskal.test]{Kruskal-Wallis}} test.
+If \code{group} is specified, they are compared using two-sample \link[stats:t.test]{t}-test,
+\link[stats:wilcox.test]{Wilcoxon / Mann-Whitney} test, one-way \link[stats:aov]{ANOVA} and/or
+\link[stats:kruskal.test]{Kruskal-Wallis} test.
 
 \link[base]{logical} and \link[base]{factor} variables are summarized in counts and percentages.
-If \code{group} is specified, they are compared using \code{\link[stats:prop.test]{chi-squared}} test
-and/or \code{\link[stats:fisher.test]{Fisher exact}} test.
+If \code{group} is specified, they are compared using \link[stats:prop.test]{chi-squared} test
+and/or \link[stats:fisher.test]{Fisher exact} test.
 }
 \examples{
 DemographicTable(esoph)
@@ -94,7 +94,7 @@ DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE, use
 library(flextable)
 library(officer)
 x = read_docx() |> body_add_flextable(value = as_flextable(DemographicTable(esoph)))
-(out = file.path(tempdir(), 'demostable.docx'))
+(out = file.path(tempdir(), 'demotable.docx'))
 print(x, target = out)
 # system(paste('open', out)) # works on Mac & Windows, but requires Microsoft Word
 file.remove(out)

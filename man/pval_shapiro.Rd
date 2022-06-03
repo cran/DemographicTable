@@ -12,21 +12,21 @@ pval_shapiro(x, CLT = FALSE)
 \item{CLT}{\link[base]{logical} scalar, whether to allow the use of Central Limit Theorem (default \code{FALSE})}
 }
 \value{
-\code{\link{pval_shapiro}} returns a \link[base]{double} scalar.
+\link{pval_shapiro} returns a \link[base]{double} scalar.
 }
 \description{
-Obtain p-value from \code{\link[stats:shapiro.test]{Shapiro-Wilk}} normality test,
+Obtain p-value from \link[stats:shapiro.test]{Shapiro-Wilk} normality test,
 taking into consideration of several exceptions.
 }
 \details{
-\code{\link{pval_shapiro}} provides a pseudo p-value for the several exceptions of
-\code{\link[stats]{shapiro.test}}, serving as a criteria of whether robust statistics/tests need to be used
+\link{pval_shapiro} provides a pseudo p-value for the several exceptions of
+\link[stats]{shapiro.test} function, serving as a criteria of whether robust statistics/tests need to be used
 \itemize{
 \item{\code{length(x) < 3L}} {return \code{0}, robust methods needed}
 \item{\code{length(x) > 5e3L}} {return \code{1}, no robust method needed (robust methods could be too slow)}
 \item{\code{CLT & length(x) > 30L}} {return \code{1}, no robust method needed because of the use of Central Limit Theorem}
 \item{all \code{x} values identical} {return \code{0}, robust methods needed.}
-\item{Otherwise} {use the p-value from \code{\link[stats]{shapiro.test}}}
+\item{Otherwise} {use the p-value from \link[stats]{shapiro.test}}
 }
 }
 \examples{

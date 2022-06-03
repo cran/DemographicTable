@@ -6,13 +6,13 @@
 #' 
 #' @param x an R object
 #' 
-#' @param fmt see \code{\link[base]{sprintf}}
+#' @param fmt see \link[base]{sprintf}
 #' 
 #' @param ... potential parameters
 #' 
 #' @return 
 #' 
-#' \code{\link{summaryText}} returns a \link[base]{character} scalar
+#' \link{summaryText} returns a \link[base]{character} scalar
 #' 
 #' @examples 
 #' x = rpois(n = 20L, lambda = 2)

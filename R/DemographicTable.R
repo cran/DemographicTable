@@ -24,7 +24,7 @@
 #' 
 #' @param exclude_pattern (optional) \link[base]{character} scalar as 
 #' \link[base:regex]{regular expression}, 
-#' the pattern of the names of the variable(s) to be excluded. 
+#' the \strong{pattern} of the names of the variable(s) to be excluded. 
 #' 
 #' @param include \link[base]{character} vector, 
 #' the name(s) of variable(s) to be included.
@@ -32,7 +32,7 @@
 #' 
 #' @param include_pattern \link[base]{character} scalar as 
 #' \link[base:regex]{regular expression}, 
-#' the pattern of the names of the variable(s) to be included.
+#' the \strong{pattern} of the names of the variable(s) to be included.
 #' 
 #' @param overall \link[base]{logical} scalar.
 #' If \code{TRUE} (default), a column of overall summary statistics will be provided.
@@ -49,17 +49,17 @@
 #' 
 #' \link[base:numeric]{Numeric} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR), 
 #' skewness, Shapiro-Wilk normality test and ranges.
-#' If \code{group} is specified, they are compared using two-sample \code{\link[stats:t.test]{t}}-test, 
-#' \code{\link[stats:wilcox.test]{Wilcoxon / Mann-Whitney}} test, one-way \code{\link[stats:aov]{ANOVA}} and/or 
-#' \code{\link[stats:kruskal.test]{Kruskal-Wallis}} test.
+#' If \code{group} is specified, they are compared using two-sample \link[stats:t.test]{t}-test, 
+#' \link[stats:wilcox.test]{Wilcoxon / Mann-Whitney} test, one-way \link[stats:aov]{ANOVA} and/or 
+#' \link[stats:kruskal.test]{Kruskal-Wallis} test.
 #' 
 #' \link[base]{logical} and \link[base]{factor} variables are summarized in counts and percentages.
-#' If \code{group} is specified, they are compared using \code{\link[stats:prop.test]{chi-squared}} test
-#' and/or \code{\link[stats:fisher.test]{Fisher exact}} test.
+#' If \code{group} is specified, they are compared using \link[stats:prop.test]{chi-squared} test
+#' and/or \link[stats:fisher.test]{Fisher exact} test.
 #' 
 #' @return 
 #' 
-#' \code{\link{DemographicTable}} returns an object of S3 class \code{'DemographicTable'}, 
+#' \link{DemographicTable} returns an object of S3 class \code{'DemographicTable'}, 
 #' which inherits from \link[base]{matrix}.
 #' 
 #' @examples 
@@ -79,7 +79,7 @@
 #' library(flextable)
 #' library(officer)
 #' x = read_docx() |> body_add_flextable(value = as_flextable(DemographicTable(esoph)))
-#' (out = file.path(tempdir(), 'demostable.docx'))
+#' (out = file.path(tempdir(), 'demotable.docx'))
 #' print(x, target = out)
 #' # system(paste('open', out)) # works on Mac & Windows, but requires Microsoft Word
 #' file.remove(out)
@@ -317,33 +317,32 @@ demoTab_by <- function(data, vlst, group, group_perc = TRUE, compare = TRUE, ...
 }
 
 
-#' @title Convert \code{\link{DemographicTable}} to \code{\link[flextable]{flextable}}
+#' @title Convert \link{DemographicTable} to \link[flextable]{flextable}
 #' 
 #' @description 
-#' Convert a \code{\link{DemographicTable}} to \code{\link[flextable]{flextable}}.
+#' Convert a \link{DemographicTable} to \link[flextable]{flextable} object.
 #' 
-#' @param x a \code{\link{DemographicTable}}
+#' @param x a \link{DemographicTable}
 #' 
-#' @param font.size \link[base]{integer} scalar, the font size (default 8).
-#' See \code{\link[flextable]{fontsize}}
+#' @param font.size \link[base]{integer} scalar, the font size (default 8)
 #' 
 #' @param caption (optional) \link[base]{character} scalar, the table caption.
-#' See \code{\link[flextable]{set_caption}}
+#' If missing (default), no caption is included
 #' 
 #' @param ... potential additional parameters, not currently in use 
 #' 
 #' @return 
 #' 
-#' \code{\link{as_flextable.DemographicTable}} returns a \link[flextable]{flextable} object.
+#' \link{as_flextable.DemographicTable} returns a \link[flextable]{flextable} object.
 #'
-#' @seealso \link[flextable]{as_flextable}
+#' @seealso \link[flextable]{as_flextable} \link[flextable]{fontsize} \link[flextable]{set_caption}
 #' 
 #' @export
-as_flextable.DemographicTable <- function(x, font.size = 8, caption, ...) {
+as_flextable.DemographicTable <- function(x, font.size = 9, caption, ...) {
   x1 <- data.frame(' ' = dimnames(x)[[1L]], unclass(x), row.names = NULL, check.names = FALSE, fix.empty.names = FALSE, stringsAsFactors = FALSE)
   names(x1)[1L] <- attr(x, which = 'data.name', exact = TRUE)
   
-  y0 <- adjustColWidths.flextable(autofit(flextable(data = x1)), font.size = font.size)
+  y0 <- autofit(fontsize(flextable(data = x1), size = font.size, part = 'all'), part = 'all')
   y1 <- hline(y0, i = seq_len(dim(x)[1L] - 1L))
   ncols <- attr(x, which = 'ncols', exact = TRUE)
   y2 <- vline(y1, j = 1L + cumsum(ncols[-length(ncols)]))
@@ -399,7 +398,7 @@ pText_pairwise.htest <- function(x) {
 
 compare_double <- function(xs, CLT = TRUE, pairwise = 3L, alternative = c('two.sided', 'less', 'greater'), ...) {
   # @param pairwise 'integer' value, the maximum group number under which pairwise tests,
-  # \code{\link[stats]{pairwise.t.test}} and \code{\link[stats]{pairwise.wilcox.test}}, are preferred.  Default value \code{3L}.
+  # \link[stats]{pairwise.t.test} and \link[stats]{pairwise.wilcox.test}, are preferred.  Default value \code{3L}.
   
   ng <- length(xs)
   if (ng <= 1L) return('1 arm or less')
@@ -462,14 +461,14 @@ compare_bool <- function(xs, pairwise = 3L, alternative = c('two.sided', 'less',
   if (ng == 2L) {
     if (any(X == 0L, X == N)) return('') # p-value means nothing
     return(tryCatch(expr = {
-      p.value <- prop.test(x = X, n = N, alternative = alternative)$p.value
-      sprintf(fmt = paste0(symb(p.value), '%.3f\nProportion test'), p.value)
+      p.value <- binom.test(x = X, n = N, alternative = alternative)$p.value
+      sprintf(fmt = paste0(symb(p.value), '%.3f\nExact Binomial'), p.value)
     }, warning = function(w) fisher_txt))
   }
   
   if (ng <= pairwise) {
     tmp <- suppressWarnings(pairwise.prop.test(x = X, n = N, p.adjust.method = 'none', alternative = alternative))
-    return(paste(c(pText_pairwise.htest(tmp), 'Proportion test'), collapse = '\n'))
+    return(paste(c(pText_pairwise.htest(tmp), '\u03C7\u00B2'), collapse = '\n'))
   }
   
   return(fisher_txt)

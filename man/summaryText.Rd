@@ -9,12 +9,12 @@ summaryText(x, fmt, ...)
 \arguments{
 \item{x}{an R object}
 
-\item{fmt}{see \code{\link[base]{sprintf}}}
+\item{fmt}{see \link[base]{sprintf}}
 
 \item{...}{potential parameters}
 }
 \value{
-\code{\link{summaryText}} returns a \link[base]{character} scalar
+\link{summaryText} returns a \link[base]{character} scalar
 }
 \description{
 Provide the summary text of an R object
