@@ -461,8 +461,10 @@ compare_bool <- function(xs, pairwise = 3L, alternative = c('two.sided', 'less',
   if (ng == 2L) {
     if (any(X == 0L, X == N)) return('') # p-value means nothing
     return(tryCatch(expr = {
-      p.value <- binom.test(x = X, n = N, alternative = alternative)$p.value
-      sprintf(fmt = paste0(symb(p.value), '%.3f\nExact Binomial'), p.value)
+      #p.value <- binom.test(x = X, n = N, alternative = alternative)$p.value
+      #sprintf(fmt = paste0(symb(p.value), '%.3f\nExact Binomial'), p.value)
+      p.value <- prop.test(x = X, n = N, alternative = alternative)$p.value
+      sprintf(fmt = paste0(symb(p.value), '%.3f\n\u03C7\u00B2 (chi-square)'), p.value)
     }, warning = function(w) fisher_txt))
   }
   
