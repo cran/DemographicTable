@@ -360,6 +360,51 @@ print.DemographicTable <- function(x, ...) print(as_flextable.DemographicTable(x
 
 
 
+#' @title Write \link{DemographicTable} to LaTeX
+#' 
+#' @description Write \link{DemographicTable} to LaTeX.
+#' 
+#' @param x a \link{DemographicTable}
+#' 
+#' @param ... potential parameters of \link[xtable]{xtable}
+#' 
+#' @return 
+#' 
+#' \link{xtable.DemographicTable} returns an \link[xtable]{xtable} object.
+#' 
+#' @seealso \link[xtable]{xtable}
+#' 
+#' @examples 
+#' (tb = DemographicTable(ToothGrowth, groups = 'supp'))
+#' library(xtable)
+#' print(xtable(tb), sanitize.text.function = identity, 
+#'  sanitize.colnames.function = NULL, include.rownames = FALSE)
+#' 
+#' @export
+xtable.DemographicTable <- function(x, ...) {
+  row_break <- function(x) {
+    # `x` is row-1 matrix
+    x0 <- c(rownames(x), x)
+    x0 <- gsub('\u00B1', replacement = '\\\\pm ', x = x0)
+    x0 <- gsub('\u2713', replacement = '\\\\checkmark ', x = x0)
+    x0 <- gsub('\u26A0', replacement = '\\\\times ', x = x0)
+    y0 <- strsplit(x0, split = '\n')
+    ny <- lengths(y0, use.names = FALSE)
+    n <- max(ny)
+    y1 <- lapply(y0, FUN = function(i) c(i, rep('', times = n - length(i))))
+    do.call(cbind, args = y1)
+  }
+  
+  y0 <- do.call(rbind, args = lapply(seq_len(dim(x)[1L]), FUN = function(i) {
+    row_break(x[i, , drop = FALSE])
+  }))
+  cnm <- gsub(pattern = '\\n', replacement = ' ', dimnames(unclass(x))[[2L]])
+  colnames(y0) <- c(attr(x, which = 'data.name', exact = TRUE), cnm)
+  
+  y1 <- as.data.frame.matrix(y0, make.names = FALSE, row.names = FALSE)
+  return(xtable(y1, ...))
+}
+
 
 
 
@@ -462,7 +507,7 @@ compare_bool <- function(xs, pairwise = 3L, alternative = c('two.sided', 'less',
     if (any(X == 0L, X == N)) return('') # p-value means nothing
     return(tryCatch(expr = {
       #p.value <- binom.test(x = X, n = N, alternative = alternative)$p.value
-      #sprintf(fmt = paste0(symb(p.value), '%.3f\nExact Binomial'), p.value)
+      #sprintf(fmt = paste0(symb(p.value), '%.3f\nExact Binomial'), p.value) # sometimes looks wrong..
       p.value <- prop.test(x = X, n = N, alternative = alternative)$p.value
       sprintf(fmt = paste0(symb(p.value), '%.3f\n\u03C7\u00B2 (chi-square)'), p.value)
     }, warning = function(w) fisher_txt))
@@ -499,7 +544,7 @@ compare_factor <- function(x, g, ...) {
   if (is.character(tmp)) return(tmp)
   p.value <- tmp$p.value
   if (grepl('^Fisher', tmp$method)) return(sprintf(fmt = paste0(symb(p.value), '%.3f\nFisher\'s Exact'), p.value))
-  return(sprintf(fmt = paste0(symb(p.value), '%.3f\nChi-Dquared'), p.value))
+  return(sprintf(fmt = paste0(symb(p.value), '%.3f\n\u03C7\u00B2 (chi-square)'), p.value))
   
 }
 

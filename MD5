@@ -1,8 +1,8 @@
-6573a0a88101910e9a171f6dd5f92fb9 *DESCRIPTION
-d1b175550676cabb75016e495fa37d8e *NAMESPACE
-e98519671c6f90f846fe96129e923e5f *NEWS.md
-1ee2b7e2f7736c986d2b261592f07f7b *R/DemographicTable.R
-bf92790aacc05c4f5d6bb77df8d22304 *R/DemographicTable_info.R
+edbe7fb1730ed46b941a646962cde18d *DESCRIPTION
+8c7cb815d70bbe0735144f41b65ab384 *NAMESPACE
+4a45df6f85594ae9629cea67be23e1e3 *NEWS.md
+b801cea47b96870c71eafc6d416187f0 *R/DemographicTable.R
+15952223c37c27556118c806d99abb1c *R/DemographicTable_info.R
 dc60ec3f0d3e6231905706d794dc6653 *R/class1List.R
 db5a1236bf0661d06497063c22b1ad76 *R/pval_shapiro.R
 8c9dd8067c2ff5ddeafcec6adfcd741c *R/summaryText.R
@@ -12,3 +12,4 @@ a38ff7f1f4a618730f343f170baa02b9 *man/DemographicTable.Rd
 7330d4c09b286b583f72111de4b047b2 *man/class1List.Rd
 a068e810cf08954e415a3cf0b15ce2c8 *man/pval_shapiro.Rd
 57dfd653d7a1d998b0e19d4ad217df87 *man/summaryText.Rd
+9272606e29692049816bbbea4547b746 *man/xtable.DemographicTable.Rd

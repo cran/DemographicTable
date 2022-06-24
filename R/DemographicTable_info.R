@@ -15,6 +15,7 @@
 #' 
 #' @importFrom flextable flextable as_flextable autofit hline vline set_caption fontsize 
 #' @importFrom e1071 skewness
+#' @importFrom xtable xtable
 #'
 #' @docType package
 #' @keywords package
