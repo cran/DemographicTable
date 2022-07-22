@@ -1,3 +1,5 @@
+# DemographicTable 0.1.6
+Add exception handling for Fisher's exact test
 # DemographicTable 0.1.5
 Add xtable.DemographicTable for LaTeX output
 # DemographicTable 0.1.4

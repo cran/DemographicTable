@@ -500,7 +500,12 @@ compare_bool <- function(xs, pairwise = 3L, alternative = c('two.sided', 'less',
   X <- vapply(xs, FUN = sum, FUN.VALUE = 0L, USE.NAMES = TRUE)
   N <- lengths(xs, use.names = TRUE)
   
-  p.value <- fisher.test(cbind(X, N-X), alternative = alternative)$p.value
+  fish <- tryCatch(fisher.test(cbind(X, N-X), alternative = alternative), error = function(e) {
+    if (grepl('consider using \'simulate.p.value=TRUE\'$', e$message)) {
+      fisher.test(cbind(X, N-X), alternative = alternative, simulate.p.value = TRUE)
+    } else stop(e$message)
+  })
+  p.value <- fish$p.value
   fisher_txt <- sprintf(fmt = paste0(symb(p.value), '%.3f\nFisher\'s Exact'), p.value)
   
   if (ng == 2L) {
