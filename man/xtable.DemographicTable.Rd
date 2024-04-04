@@ -7,12 +7,12 @@
 \method{xtable}{DemographicTable}(x, ...)
 }
 \arguments{
-\item{x}{a \link{DemographicTable}}
+\item{x}{a \link{DemographicTable} object}
 
-\item{...}{potential parameters of \link[xtable]{xtable}}
+\item{...}{additional parameters of \link[xtable]{xtable}}
 }
 \value{
-\link{xtable.DemographicTable} returns an \link[xtable]{xtable} object.
+Function \link{xtable.DemographicTable} returns an \link[xtable]{xtable} object.
 }
 \description{
 Write \link{DemographicTable} to LaTeX.
@@ -23,7 +23,4 @@ library(xtable)
 print(xtable(tb), sanitize.text.function = identity, 
  sanitize.colnames.function = NULL, include.rownames = FALSE)
 
-}
-\seealso{
-\link[xtable]{xtable}
 }

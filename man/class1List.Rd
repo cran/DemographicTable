@@ -2,19 +2,19 @@
 % Please edit documentation in R/class1List.R
 \name{class1List}
 \alias{class1List}
-\title{class1List}
+\title{First Class of Each Element in a Recursive Object}
 \usage{
 class1List(x)
 }
 \arguments{
-\item{x}{a \link[base]{data.frame} or \link[base]{list}}
+\item{x}{a \link[base:is.recursive]{recursive} object, e.g., \link[base]{data.frame} or \link[base]{list}}
 }
 \value{
-\link{class1List} returns a \link[base]{list}
-of the first \link[base]{class} of each element of the input.
+Function \link{class1List} returns a \link[base]{list} of \link[base]{character} elements.
+Each element is a collection of the names of the elements of each specific class.
 }
 \description{
-The first \link[base]{class} of each columns in a \link[base:is.recursive]{recursive} object
+First \link[base]{class} of each element in a \link[base:is.recursive]{recursive} object
 }
 \examples{
 class1List(esoph)

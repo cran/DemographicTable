@@ -2,31 +2,33 @@
 % Please edit documentation in R/pval_shapiro.R
 \name{pval_shapiro}
 \alias{pval_shapiro}
-\title{P-value from modified Shapiro-Wilk Normality Test}
+\title{\eqn{p}-value from modified Shapiro-Wilk Normality Test}
 \usage{
-pval_shapiro(x, CLT = FALSE)
+pval_shapiro(x, CLT = FALSE, ...)
 }
 \arguments{
-\item{x}{\link[base]{double} vector}
+\item{x}{\link[base]{double} \link[base]{vector}}
 
-\item{CLT}{\link[base]{logical} scalar, whether to allow the use of Central Limit Theorem (default \code{FALSE})}
+\item{CLT}{\link[base]{logical} scalar, whether to allow the use of Central Limit Theorem, default \code{FALSE}}
+
+\item{...}{additional parameters, currently not in use}
 }
 \value{
-\link{pval_shapiro} returns a \link[base]{double} scalar.
+Function \link{pval_shapiro} returns a \link[base]{double} scalar.
 }
 \description{
-Obtain p-value from \link[stats:shapiro.test]{Shapiro-Wilk} normality test,
+Obtain \eqn{p}-value from \link[stats]{shapiro.test},
 taking into consideration of several exceptions.
 }
 \details{
-\link{pval_shapiro} provides a pseudo p-value for the several exceptions of
-\link[stats]{shapiro.test} function, serving as a criteria of whether robust statistics/tests need to be used
-\itemize{
-\item{\code{length(x) < 3L}} {return \code{0}, robust methods needed}
-\item{\code{length(x) > 5e3L}} {return \code{1}, no robust method needed (robust methods could be too slow)}
-\item{\code{CLT & length(x) > 30L}} {return \code{1}, no robust method needed because of the use of Central Limit Theorem}
-\item{all \code{x} values identical} {return \code{0}, robust methods needed.}
-\item{Otherwise} {use the p-value from \link[stats]{shapiro.test}}
+Function \link{pval_shapiro} provides a pseudo \eqn{p}-value for several exceptions of
+\link[stats]{shapiro.test}, serving as a criteria of whether robust statistics/tests need to be used
+\describe{
+\item{\code{length(x) < 3L}}{returns \eqn{p=0}, indicating that robust methods are needed.}
+\item{\code{length(x) > 5e3L}}{returns \eqn{p=1}, indicating that no robust method is needed.  For such large sample size, robust methods could be too slow.}
+\item{\code{CLT & length(x) > 30L}}{returns \eqn{p=1}, indicating that no robust method is needed because of the use of Central Limit Theorem.}
+\item{all \code{x} values are \link[base]{identical} (or \link[base]{all.equal}, to be implemented in future release)}{returns \eqn{p=0}, indicating that robust methods are needed.}
+\item{Otherwise}{use the \eqn{p}-value from \link[stats]{shapiro.test}.}
 }
 }
 \examples{

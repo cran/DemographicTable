@@ -4,24 +4,19 @@
 \alias{as_flextable.DemographicTable}
 \title{Convert \link{DemographicTable} to \link[flextable]{flextable}}
 \usage{
-\method{as_flextable}{DemographicTable}(x, font.size = 9, caption, ...)
+\method{as_flextable}{DemographicTable}(x, ...)
 }
 \arguments{
-\item{x}{a \link{DemographicTable}}
-
-\item{font.size}{\link[base]{integer} scalar, the font size (default 8)}
-
-\item{caption}{(optional) \link[base]{character} scalar, the table caption.
-If missing (default), no caption is included}
+\item{x}{a \link{DemographicTable} object}
 
 \item{...}{potential additional parameters, not currently in use}
 }
 \value{
-\link{as_flextable.DemographicTable} returns a \link[flextable]{flextable} object.
+Function \link{as_flextable.DemographicTable} returns a \link[flextable]{flextable} object.
 }
 \description{
 Convert a \link{DemographicTable} to \link[flextable]{flextable} object.
 }
-\seealso{
-\link[flextable]{as_flextable} \link[flextable]{fontsize} \link[flextable]{set_caption}
+\note{
+End user may use \link[flextable]{set_caption} to add a caption to the output demographic table.
 }

@@ -1,3 +1,5 @@
+# DemographicTable 0.1.7
+Bug fix.
 # DemographicTable 0.1.6
 Add exception handling for Fisher's exact test
 # DemographicTable 0.1.5

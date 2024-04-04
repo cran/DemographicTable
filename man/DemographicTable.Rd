@@ -2,9 +2,12 @@
 % Please edit documentation in R/DemographicTable.R
 \name{DemographicTable}
 \alias{DemographicTable}
+\alias{DemographicTable.data.frame}
 \title{Create Demographic Table}
 \usage{
-DemographicTable(
+DemographicTable(data, ...)
+
+\method{DemographicTable}{data.frame}(
   data,
   data.name = substitute(data),
   groups = NULL,
@@ -13,18 +16,23 @@ DemographicTable(
   exclude_pattern,
   include,
   include_pattern,
+  paired = FALSE,
+  robust = TRUE,
   overall = TRUE,
   compare = TRUE,
+  pairwise = 3L,
   ...
 )
 }
 \arguments{
 \item{data}{a \link[base]{data.frame}}
 
+\item{...}{additional parameters, currently not in use}
+
 \item{data.name}{\link[base]{character} scalar, or the argument call of \code{data}.
 A user-friendly name of the input \code{data}.}
 
-\item{groups}{\link[base]{character} scalar or vector,
+\item{groups}{\link[base]{character} scalar or \link[base]{vector},
 the name(s) of sub-group(s) for which the summary statistics are to be provided.
 Default \code{NULL} indicating no sub-groups.}
 
@@ -33,21 +41,27 @@ If \code{TRUE} (default), the subjects with missing \code{group}
 are put into a new group (\code{'.missing'}).
 if \code{FALSE}, these subjects are removed from group-wise summary statistics.}
 
-\item{exclude}{\link[base]{character} vector,
+\item{exclude}{\link[base]{character} \link[base]{vector},
 the name(s) of variable(s) to be excluded.
 Default \code{NULL} indicating no variable are to be excluded.}
 
 \item{exclude_pattern}{(optional) \link[base]{character} scalar as
-\link[base:regex]{regular expression},
-the \strong{pattern} of the names of the variable(s) to be excluded.}
+\link[base]{regex} (regular expression),
+the pattern of the names of the variable(s) to be excluded.}
 
-\item{include}{\link[base]{character} vector,
+\item{include}{\link[base]{character} \link[base]{vector},
 the name(s) of variable(s) to be included.
 Default \code{names(data)} indicating all variables are to be included.}
 
-\item{include_pattern}{\link[base]{character} scalar as
-\link[base:regex]{regular expression},
-the \strong{pattern} of the names of the variable(s) to be included.}
+\item{include_pattern}{(optional) \link[base]{character} scalar as
+\link[base]{regex} (regular expression),
+the pattern of the names of the variable(s) to be included.}
+
+\item{paired}{\link[base]{logical} scalar, whether to perform paired test (default \code{FALSE})}
+
+\item{robust}{\link[base]{logical} scalar.
+If \code{TRUE} (default), use non-parametric methods for
+non-normally distributed \link[base]{numeric} variables.}
 
 \item{overall}{\link[base]{logical} scalar.
 If \code{TRUE} (default), a column of overall summary statistics will be provided.}
@@ -55,10 +69,12 @@ If \code{TRUE} (default), a column of overall summary statistics will be provide
 \item{compare}{\link[base]{logical} scalar.
 If \code{TRUE} (default), comparisons between group(s) will be made.}
 
-\item{...}{potential parameters}
+\item{pairwise}{\link[base]{integer} scalar,
+minimum number of groups where pairwise comparisons need to be performed.
+Default \code{3L}.}
 }
 \value{
-\link{DemographicTable} returns an object of S3 class \code{'DemographicTable'},
+Function \link{DemographicTable} returns an object of S3 class \code{'DemographicTable'},
 which inherits from \link[base]{matrix}.
 }
 \description{
@@ -67,26 +83,26 @@ Create a demographic table with simple summary statistics, with optional compari
 \details{
 A demographic table with simple summary statistics, with optional comparison(s) over one or more groups, is created.
 
-\link[base:numeric]{Numeric} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR),
-skewness, Shapiro-Wilk normality test and ranges.
-If \code{group} is specified, they are compared using two-sample \link[stats:t.test]{t}-test,
-\link[stats:wilcox.test]{Wilcoxon / Mann-Whitney} test, one-way \link[stats:aov]{ANOVA} and/or
-\link[stats:kruskal.test]{Kruskal-Wallis} test.
+\link[base]{numeric} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR),
+skewness, \eqn{p}-value of Shapiro-Wilk normality test and ranges.
+If \code{group} is specified, they are compared using two-sample \link[stats]{t.test},
+\link[stats]{wilcox.test} (Wilcoxon / Mann-Whitney), one-way \link[stats]{aov} (ANOVA) and/or
+\link[stats]{kruskal.test} (Kruskal-Wallis).
 
 \link[base]{logical} and \link[base]{factor} variables are summarized in counts and percentages.
-If \code{group} is specified, they are compared using \link[stats:prop.test]{chi-squared} test
-and/or \link[stats:fisher.test]{Fisher exact} test.
+If \code{group} is specified, they are compared using \link[stats]{prop.test} (chi-squared)
+and/or \link[stats]{fisher.test} (Fisher's exact).
 }
 \examples{
 DemographicTable(esoph)
-DemographicTable(ToothGrowth, groups = 'supp')
-DemographicTable(ToothGrowth, groups = 'supp', compare = FALSE)
+DemographicTable(ToothGrowth, groups = 'supp', include = 'len')
+DemographicTable(ToothGrowth, groups = 'supp', include = 'len', paired = TRUE)
+DemographicTable(ToothGrowth, groups = 'supp', include = 'len', compare = FALSE)
 DemographicTable(warpbreaks, groups = c('wool', 'tension'))
 DemographicTable(mtcars, groups = c('vs', 'am'), include = c('mpg', 'cyl', 'disp'))
 
 # with missing value
 DemographicTable(airquality, groups = 'Month', exclude = 'Day')
-DemographicTable(MASS::survey, groups = 'Smoke')
 DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE)
 DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE, useNA = 'always')
 
