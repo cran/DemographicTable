@@ -11,8 +11,5 @@
 #' Logical and factor variables are summarized in counts and percentages and
 #' compared using chi-squared test and/or Fisher's exact test.
 #'
-#' @author Tingting Zhan
-#'
-#' @keywords internal
 '_PACKAGE'
 

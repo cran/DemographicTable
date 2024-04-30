@@ -1,3 +1,5 @@
+# DemographicTable 0.1.8
+Release for R 4.4.0
 # DemographicTable 0.1.7
 Bug fix.
 # DemographicTable 0.1.6

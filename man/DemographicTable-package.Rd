@@ -13,6 +13,6 @@ Logical and factor variables are summarized in counts and percentages and
 compared using chi-squared test and/or Fisher's exact test.
 }
 \author{
-Tingting Zhan
+\strong{Maintainer}: Tingting Zhan \email{tingtingzhan@gmail.com} (\href{https://orcid.org/0000-0001-9971-4844}{ORCID}) [copyright holder]
+
 }
-\keyword{internal}
