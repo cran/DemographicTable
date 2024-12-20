@@ -2,20 +2,16 @@
 % Please edit documentation in R/DemographicTable.R
 \name{DemographicTable}
 \alias{DemographicTable}
-\alias{DemographicTable.data.frame}
 \title{Create Demographic Table}
 \usage{
-DemographicTable(data, ...)
-
-\method{DemographicTable}{data.frame}(
+DemographicTable(
   data,
   data.name = substitute(data),
   groups = NULL,
-  keep_missing_group = TRUE,
   exclude = NULL,
-  exclude_pattern,
+  exclude_rx,
   include,
-  include_pattern,
+  include_rx,
   paired = FALSE,
   robust = TRUE,
   overall = TRUE,
@@ -27,35 +23,26 @@ DemographicTable(data, ...)
 \arguments{
 \item{data}{a \link[base]{data.frame}}
 
-\item{...}{additional parameters, currently not in use}
-
-\item{data.name}{\link[base]{character} scalar, or the argument call of \code{data}.
+\item{data.name}{\link[base]{character} scalar, or the argument \link[base]{call} of \code{data}.
 A user-friendly name of the input \code{data}.}
 
 \item{groups}{\link[base]{character} scalar or \link[base]{vector},
-the name(s) of sub-group(s) for which the summary statistics are to be provided.
+the name(s) of sub-group(s) for which the summary statistics are provided.
 Default \code{NULL} indicating no sub-groups.}
-
-\item{keep_missing_group}{\link[base]{logical} scalar.
-If \code{TRUE} (default), the subjects with missing \code{group}
-are put into a new group (\code{'.missing'}).
-if \code{FALSE}, these subjects are removed from group-wise summary statistics.}
 
 \item{exclude}{\link[base]{character} \link[base]{vector},
 the name(s) of variable(s) to be excluded.
-Default \code{NULL} indicating no variable are to be excluded.}
+Default \code{NULL} indicating no variable are excluded.}
 
-\item{exclude_pattern}{(optional) \link[base]{character} scalar as
-\link[base]{regex} (regular expression),
-the pattern of the names of the variable(s) to be excluded.}
+\item{exclude_rx}{(optional) \link[base]{regex},
+pattern of the names of the variable(s) to be excluded.}
 
 \item{include}{\link[base]{character} \link[base]{vector},
 the name(s) of variable(s) to be included.
-Default \code{names(data)} indicating all variables are to be included.}
+Default \code{names(data)} indicating all variables are included.}
 
-\item{include_pattern}{(optional) \link[base]{character} scalar as
-\link[base]{regex} (regular expression),
-the pattern of the names of the variable(s) to be included.}
+\item{include_rx}{(optional) \link[base]{regex},
+pattern of the names of the variable(s) to be included.}
 
 \item{paired}{\link[base]{logical} scalar, whether to perform paired test (default \code{FALSE})}
 
@@ -72,10 +59,12 @@ If \code{TRUE} (default), comparisons between group(s) will be made.}
 \item{pairwise}{\link[base]{integer} scalar,
 minimum number of groups where pairwise comparisons need to be performed.
 Default \code{3L}.}
+
+\item{...}{additional parameters, currently not in use}
 }
 \value{
 Function \link{DemographicTable} returns an object of S3 class \code{'DemographicTable'},
-which inherits from \link[base]{matrix}.
+which is a \link[base]{list} of \link[base]{matrix}-es.
 }
 \description{
 Create a demographic table with simple summary statistics, with optional comparison(s) over one or more groups.
@@ -94,25 +83,22 @@ If \code{group} is specified, they are compared using \link[stats]{prop.test} (c
 and/or \link[stats]{fisher.test} (Fisher's exact).
 }
 \examples{
-DemographicTable(esoph)
-DemographicTable(ToothGrowth, groups = 'supp', include = 'len')
-DemographicTable(ToothGrowth, groups = 'supp', include = 'len', paired = TRUE)
-DemographicTable(ToothGrowth, groups = 'supp', include = 'len', compare = FALSE)
-DemographicTable(warpbreaks, groups = c('wool', 'tension'))
-DemographicTable(mtcars, groups = c('vs', 'am'), include = c('mpg', 'cyl', 'disp'))
+tgr = within(ToothGrowth, expr = { dose = factor(dose) })
+DemographicTable(tgr, include = c('supp', 'len', 'dose'))
+DemographicTable(tgr, groups = 'supp', include = c('len', 'dose'))
+DemographicTable(tgr, groups = 'supp', include = 'len', paired = TRUE)
+DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
+DemographicTable(tgr, groups = c('supp', 'dose'), include = 'len')
 
-# with missing value
-DemographicTable(airquality, groups = 'Month', exclude = 'Day')
-DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE)
-DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE, useNA = 'always')
+(tb1 = DemographicTable(CO2, groups = 'Type', include = c('conc', 'uptake')))
+CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
+(tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake')))
+c(tb1, tb2)
 
-# write to Word file
-library(flextable)
-library(officer)
-x = read_docx() |> body_add_flextable(value = as_flextable(DemographicTable(esoph)))
-(out = file.path(tempdir(), 'demotable.docx'))
-print(x, target = out)
-# system(paste('open', out)) # works on Mac & Windows, but requires Microsoft Word
-file.remove(out)
+# pairwise comparision
+DemographicTable(MASS::survey, groups = 'Fold')
+
+# missing value in `groups`
+DemographicTable(MASS::survey, groups = c('M.I'))
 
 }
