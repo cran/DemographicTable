@@ -12,7 +12,6 @@ DemographicTable(
   exclude_rx,
   include,
   include_rx,
-  paired = FALSE,
   robust = TRUE,
   overall = TRUE,
   compare = TRUE,
@@ -43,8 +42,6 @@ Default \code{names(data)} indicating all variables are included.}
 
 \item{include_rx}{(optional) \link[base]{regex},
 pattern of the names of the variable(s) to be included.}
-
-\item{paired}{\link[base]{logical} scalar, whether to perform paired test (default \code{FALSE})}
 
 \item{robust}{\link[base]{logical} scalar.
 If \code{TRUE} (default), use non-parametric methods for
@@ -86,9 +83,8 @@ and/or \link[stats]{fisher.test} (Fisher's exact).
 tgr = within(ToothGrowth, expr = { dose = factor(dose) })
 DemographicTable(tgr, include = c('supp', 'len', 'dose'))
 DemographicTable(tgr, groups = 'supp', include = c('len', 'dose'))
-DemographicTable(tgr, groups = 'supp', include = 'len', paired = TRUE)
 DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
-DemographicTable(tgr, groups = c('supp', 'dose'), include = 'len')
+DemographicTable(tgr, groups = c('supp', 'dose'), include = c('len', 'supp'))
 
 (tb1 = DemographicTable(CO2, groups = 'Type', include = c('conc', 'uptake')))
 CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
@@ -96,9 +92,13 @@ CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
 c(tb1, tb2)
 
 # pairwise comparision
-DemographicTable(MASS::survey, groups = 'Fold')
+DemographicTable(warpbreaks, groups = 'tension')
 
 # missing value in `groups`
 DemographicTable(MASS::survey, groups = c('M.I'))
 
+mtcars$vs = as.logical(mtcars$vs)
+tryCatch(DemographicTable(mtcars, groups = 'am', include = c('hp', 'drat')), warning = identity)
+mtcars$am = as.logical(mtcars$am)
+tryCatch(DemographicTable(mtcars, groups = 'cyl', include = c('vs')), warning = identity)
 }
