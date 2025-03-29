@@ -59,33 +59,11 @@
 #' 
 #' @returns 
 #' 
-#' Function [DemographicTable] returns an object of S3 class `'DemographicTable'`, 
-#' which is a \link[base]{list} of \link[base]{matrix}-es.
+#' Function [DemographicTable()] returns an object of S3 class `'DemographicTable'`, 
+#' which is a \link[stats]{listof} `'sumtab'` elements.
 #' 
+#' @keywords internal
 #' @importFrom stats aov chisq.test fisher.test kruskal.test mcnemar.test pairwise.prop.test pairwise.t.test pairwise.wilcox.test prop.test quantile t.test sd wilcox.test
-#' 
-#' @examples 
-#' tgr = within(ToothGrowth, expr = { dose = factor(dose) })
-#' DemographicTable(tgr, include = c('supp', 'len', 'dose'))
-#' DemographicTable(tgr, groups = 'supp', include = c('len', 'dose'))
-#' DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
-#' DemographicTable(tgr, groups = c('supp', 'dose'), include = c('len', 'supp'))
-#' 
-#' (tb1 = DemographicTable(CO2, groups = 'Type', include = c('conc', 'uptake')))
-#' CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
-#' (tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake')))
-#' c(tb1, tb2)
-#' 
-#' # pairwise comparision
-#' DemographicTable(warpbreaks, groups = 'tension')
-#' 
-#' # missing value in `groups`
-#' DemographicTable(MASS::survey, groups = c('M.I'))
-#' 
-#' mtcars$vs = as.logical(mtcars$vs)
-#' tryCatch(DemographicTable(mtcars, groups = 'am', include = c('hp', 'drat')), warning = identity)
-#' mtcars$am = as.logical(mtcars$am)
-#' tryCatch(DemographicTable(mtcars, groups = 'cyl', include = c('vs')), warning = identity)
 #' @export
 DemographicTable <- function(
     data, data.name = substitute(data), 
@@ -203,15 +181,16 @@ DemographicTable <- function(
   ret0 <- if (overall) list(.sumtab(data, data.name = data.name, vlst = vlst, ...)) # else NULL      
   ret1 <- if (length(groups)) {
     # in this way, `names(groups)` won't be passed into [.sumtab_by]
-    lapply(seq_along(groups), FUN = function(i) {
-      .sumtab_by(data = data, data.name = data.name, group = groups[i], vlst = vlst, compare = compare, robust = robust, pairwise = pairwise, ...)
-    })
+    groups |>
+      seq_along() |>
+      lapply(FUN = function(i) {
+        .sumtab_by(data = data, data.name = data.name, group = groups[i], vlst = vlst, compare = compare, robust = robust, pairwise = pairwise, ...)
+      })
   }
   ret <- c(ret0, ret1)
   if (!length(ret)) stop('wont happen')
   
-  #attr(ret, which = 'data.name') <- data.name
-  class(ret) <- c('DemographicTable', class(ret))
+  class(ret) <- c('DemographicTable', 'listof')
   return(ret)
   
 }
@@ -233,25 +212,32 @@ DemographicTable <- function(
   
   out_num <- if (length(.num <- c(vlst$integer, vlst$numeric))) {
     names(.num) <- .num
-    unlist(lapply(data[.num], FUN = .sumstat.default, fmt = fmt, ...), use.names = TRUE)
+    data[.num] |>
+      lapply(FUN = .sumstat.default, fmt = fmt, ...) |>
+      unlist(use.names = TRUE)
   } #else NULL
   
   out_difft <- if (length(.difft <- vlst$difftime)) {
     d_difft <- data[.difft]
     names(d_difft) <- paste0(.difft, ' (', vapply(data[.difft], FUN = attr, which = 'units', exact = TRUE, FUN.VALUE = ''), ')') # ?base::units.difftime
-    unlist(lapply(d_difft, FUN = .sumstat.default, fmt = fmt, ...), use.names = TRUE)
+    d_difft |>
+      lapply(FUN = .sumstat.default, fmt = fmt, ...) |>
+      unlist(use.names = TRUE)
   } #else NULL
   
   out_bool <- if (length(.bool <- vlst$logical)) {
     d_bool <- data[.bool]
     names(d_bool) <- paste0(.bool, ': n (%)')
-    vapply(d_bool, FUN = .sumstat.logical, fmt = fmt, ..., FUN.VALUE = '')
+    d_bool |>
+      vapply(FUN = .sumstat.logical, fmt = fmt, ..., FUN.VALUE = '')
   } #else NULL
   
   out_factor <- if (length(.fact <- c(vlst$character, vlst$factor, vlst$ordered))) {
     d_fact <- data[.fact]
     names(d_fact) <- paste0(.fact, ': n (%)')
-    unlist(lapply(d_fact, FUN = .sumstat, fmt = fmt, ...), use.names = TRUE) 
+    d_fact |>
+      lapply(FUN = .sumstat, fmt = fmt, ...) |>
+      unlist(use.names = TRUE) 
   } #else NULL
 
   ret0 <- c(out_num, out_difft, out_bool, out_factor)
@@ -262,7 +248,8 @@ DemographicTable <- function(
   attr(ret, which = 'data.name') <- data.name
   attr(ret, which = 'group') <- '' # important
   attr(ret, which = 'compare') <- FALSE
-  class(ret) <- c('sumtab', class(ret))
+  #class(ret) <- c('sumtab', class(ret))
+  class(ret) <- 'sumtab'
   return(ret)
 }
 
@@ -306,7 +293,7 @@ DemographicTable <- function(
   attr(ret, which = 'group') <- group
   attr(ret, which = 'data.name') <- data.name
   attr(ret, which = 'compare') <- compare
-  class(ret) <- c('sumtab', class(ret))
+  class(ret) <- 'sumtab'
   return(ret)
 
 }
@@ -352,6 +339,8 @@ pText_pairwise.htest <- function(x) {
 }
 
 
+# flextable.tzh::format_pval
+# tzh is not ready to publish \pkg{flextable.tzh}...
 
 # @param pairwise \link[base]{integer} scalar, the maximum group number under which pairwise tests,
 # \link[stats]{pairwise.t.test} and \link[stats]{pairwise.wilcox.test}, are preferred.  Default value `3L`.
