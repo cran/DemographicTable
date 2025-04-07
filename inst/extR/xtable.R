@@ -35,11 +35,11 @@ xtable.DemographicTable <- function(x, ...) {
     y0 <- strsplit(x0, split = '\n')
     ny <- lengths(y0, use.names = FALSE)
     n <- max(ny)
-    y1 <- lapply(y0, FUN = function(i) c(i, rep('', times = n - length(i))))
+    y1 <- lapply(y0, FUN = \(i) c(i, rep('', times = n - length(i))))
     do.call(cbind, args = y1)
   }
   
-  y0 <- do.call(rbind, args = lapply(seq_len(dim(x)[1L]), FUN = function(i) {
+  y0 <- do.call(rbind, args = lapply(seq_len(dim(x)[1L]), FUN = \(i) {
     row_break(x[i, , drop = FALSE])
   }))
   cnm <- gsub(pattern = '\\n', replacement = ' ', dimnames(unclass(x))[[2L]])
